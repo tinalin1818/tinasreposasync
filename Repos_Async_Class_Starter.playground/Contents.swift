@@ -21,12 +21,11 @@ struct Repository: Decodable {
 }
 
 // Our initial function (needs fixing...)
-func fetchRepositories() throws -> [Repository] {
+func fetchRepositories() async throws -> [Repository] {
   let url = URL(string: "https://api.github.com/search/repositories?q=language:swift&sort=stars&order=desc")!
-  let (data, _) = try URLSession.shared.data(from: url)
+  let (data, _) = try await URLSession.shared.data(from: url)
   return try JSONDecoder().decode(Repositories.self, from: data).repos
 }
-
 
 // A task to utilize this function
 // - call function then loop over repos array to print out the name & url for each
@@ -34,7 +33,12 @@ func fetchRepositories() throws -> [Repository] {
 Task {
   print("Step 1")
 
-  // ...
+        let repositories = try await fetchRepositories()
+        
+        for repo in repositories {
+            print(repo.name)
+            print(repo.htmlURL)
+    }
 
   print("Step 5")
 }
